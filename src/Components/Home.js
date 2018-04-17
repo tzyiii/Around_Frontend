@@ -2,6 +2,8 @@ import React from 'react';
 import { Tabs, Button, Spin } from 'antd';
 import {GEO_OPTIONS, POS_KEY, AUTH_PREFIX, API_ROOT, TOKEN_KEY} from '../constants.js';
 import $ from 'jquery';
+import {Gallery} from "./Gallery";
+
 
 const TabPane = Tabs.TabPane;
 const operations = <Button>Extra Action</Button>;
@@ -42,12 +44,23 @@ export class Home extends React.Component {
     getGalleryContent = () => {
         if (this.state.error) {
             return <div>{this.state.error}</div>;
-        }
-        if (this.state.loadingGeoLocation) {
+        } else if (this.state.loadingGeoLocation) {
             return <Spin tip = 'Loading your location...'/>
-        }
-        if (this.state.loadingPost) {
-            return <Spin tip = 'Loading post...'/>
+        } else if (this.state.loadingPost) {
+            return <Spin tip='Loading post...'/>
+        } else if (this.state.post && this.state.post.length > 0) {
+            const  images = this.state.post.map((post) => {
+                return {
+                    user: post.user,
+                    src: post.url,
+                    thumbnail: post.url,
+                    thumbnailWidth: 400,
+                    thumbnailHeight: 300,
+                    caption: post.message,
+                }
+            });
+            console.log(images);
+            return <Gallery images={images}/>;
         }
         return null;
     }
@@ -65,11 +78,11 @@ export class Home extends React.Component {
             }
 
         }).then((response) => {
-            this.setState({loadingPost: false});
+            this.setState({loadingPost: false, error:''});
             console.log(response);
             this.setState({post : response});
         }, (error) => {
-            this.setState({error : error.responseText});
+            this.setState({loadingPost: false, error : error.responseText});
         }).catch((error) => {
             this.setState({error : error});
         })
