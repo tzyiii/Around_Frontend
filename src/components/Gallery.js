@@ -60,5 +60,3 @@ const captionStyle = {
     padding: "2px",
     fontSize: "90%"
 };
-
-
